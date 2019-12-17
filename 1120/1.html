@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> 
+		<title>ToDoList</title>
+		<link rel="stylesheet" href="./a.css">
+	</head>
+	<body>
+        <div id="app" v-cloak>
+            <header>
+                <section>
+                    <label for="title">ToDoList</label>
+                    <input type="text" placeholder="添加ToDo" v-model="title" @keyup.enter="add()" />
+                </section>
+            </header>
+            <section>
+                <h2>正在进行 <span>{{list.length-finished}}</span></h2>
+                <ol>
+                    <li v-for="(item, index) in list" :key="index" v-show="!item.flag" >
+                        <input type="checkbox" v-model="item.flag" @change="save">
+                        <span v-show="!item.show" @click="up(index)">{{item.title}}</span>
+                        <input type="text" v-show="item.show" v-model="item.title" @blur="save">
+                        <a href="" @click="del(index)">-</a>
+                    </li>
+                </ol>
+                <h2>已经完成 <span>{{finished}}</span></h2>
+                <ul>
+                    <li v-for="(item, index) in list" :key="index" v-show="item.flag">
+                        <input type="checkbox" v-model="item.flag" @change="save">
+                        <p>
+                            <span>{{item.title}}</span>
+                            <input type="text" v-show="item.show" v-model="item.title" @blur="save">
+                        </p>
+                        <a href="" @click="del(index)">-</a>
+                    </li>
+                </ul>
+            </section>
+            <footer>
+                Copyright &copy; 2014 todolist.cn <a>clear</a>
+            </footer>
+        </div>
+	</body>
+</html>
+<script src="./vue.min.js"></script>
+<script>
+    var vm=new Vue({
+        el:"#app",
+        data:{
+            list:JSON.parse(localStorage.getItem("todo"))||[],
+            title:"",
+
+        },
+        methods: {
+            add(){
+                if(this.title==""){
+                    alert("输入框不能为空！！！")
+                }else{
+                    var obj={
+                        title:this.title,
+                        flag:false,
+                        show:false
+                    }
+                    console.log(obj)
+                    this.list.push(obj)
+                    localStorage.setItem("todo",JSON.stringify(this.list))
+                    this.title=""
+                }
+                
+            },
+            del(i){
+                this.list.splice(i,1)
+                localStorage.setItem("todo",JSON.stringify(this.list))
+            },
+            save(){
+                for (var n in this.list) {
+                    this.list[n].show=false
+                }
+                localStorage.setItem("todo",JSON.stringify(this.list))
+            },
+            up(i){
+                for (var n in this.list) {
+                    this.list[n].show=false
+                }
+                this.list[i].show=true
+            }
+        },
+        computed: {
+            finished(){
+                var s=0;
+                for (var i in this.list){
+                    if(this.list[i].flag==true){
+                        s++
+                    }
+                    
+                };
+                return s
+            }
+        },
+        watch: {
+            
+        },
+        directives:{
+
+        },
+        filters:{
+
+        }
+    })
+</script>
